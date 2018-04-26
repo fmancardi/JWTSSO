@@ -98,8 +98,10 @@ class JWTSSOPlugin extends MantisPlugin  {
 			       $t_flags->setLoginPage('login_page.php');
 		    	break;
 
-				case 'bug_report_page.php':
+                case 'bug_report_page.php':
 				case 'bug_report_page':
+				case 'view_all_bug_page.php':
+				case 'view_all_bug_page':
                    // Add here more pages that can be called with token
 				   $t_url = plugin_page( 'login_page_sso', self::FOR_REDIRECT );
 			       $t_flags->setLoginPage( $t_url );
