@@ -1,0 +1,8 @@
+<?php
+# Copyright (C) 2018 TESISQUARE
+#
+$s_plugin_JWTSSO_title = 'simple JWTSSO';
+$s_plugin_JWTSSO_config = 'simple JWTSSO Configuration';
+$s_plugin_JWTSSO_secret_key = 'Secret Key';
+$s_plugin_JWTSSO_btn_save = 'save';
+$s_plugin_JWTSSO_config_test = 'Configuration Test';

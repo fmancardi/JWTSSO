@@ -29,8 +29,9 @@ login( $jsonWebToken );
 function getUserName($jwt) {
     $username = '';
     if($jwt != '') {
+        $matahari = JWTSSOPlugin::getSecretKey();
         try {
-          $plain = JWT::decode($jwt, JWTSSOPlugin::SECRETKEY,array(JWTSSOPlugin::ALGORITHM),
+          $plain = JWT::decode($jwt, $matahari,array(JWTSSOPlugin::ALGORITHM),
                                null, array('typ' => JWTSSOPlugin::TYP));
         } catch (Exception $e) {
           echo 'Caught exception: ',  $e->getMessage(), "\n";

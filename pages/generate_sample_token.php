@@ -4,7 +4,7 @@
 use \Firebase\JWT\JWT;
 
 $jwtIn = new stdClass();
-$jwtIn->secretKey = JWTSSOPlugin::SECRETKEY;
+$jwtIn->secretKey = JWTSSOPlugin::getSecretKey();
 $jwtIn->payload = array( "username" => "Hitchcock" );
 $jwtIn->algorithm = array(JWTSSOPlugin::ALGORITHM);
 $jwtIn->header = array( "typ" => JWTSSOPlugin::TYP );
