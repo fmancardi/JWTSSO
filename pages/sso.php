@@ -27,23 +27,25 @@ login( $jsonWebToken );
  *
  */
 function getUserName($jwt) {
-    $username = '';
-    if($jwt != '') {
-        $matahari = JWTSSOPlugin::getSecretKey();
-        try {
-          $plain = JWT::decode($jwt, $matahari,array(JWTSSOPlugin::ALGORITHM),
+  $username = '';
+  if($jwt != '') {
+    $matahari = JWTSSOPlugin::getSecretKey();
+    try {
+      $plain = JWT::decode($jwt, $matahari,array(JWTSSOPlugin::ALGORITHM),
                                null, array('typ' => JWTSSOPlugin::TYP));
-        } catch (Exception $e) {
-          echo 'Caught exception: ',  $e->getMessage(), "\n";
-          var_dump($e);
-          die();
-        }
-
-        if( property_exists($plain, 'username') ) {
-          $username = $plain->username; 
-        }
+    } catch (Exception $e) {
+      echo __METHOD__ . ' :: Caught exception: ',  $e->getMessage(), "\n";
+      echo '<pre>';
+      var_dump($e);
+      echo '</pre>';
+      die();        
     }
-    return $username;
+
+    if( property_exists($plain, 'username') ) {
+      $username = $plain->username; 
+    }
+  }
+  return $username;
 }
 
 
@@ -52,8 +54,19 @@ function getUserName($jwt) {
  */
 function login($jwt) {
 
+    // Need to understand if session already exists and belogns 
+    // to same user name I'm extracting from JWT
+    // If is not the same, then I need to logout old one before
+    // to login the new
     $f_username = getUserName($jwt);
-  
+    $cuid = authGetCurrentUserID();
+    if( $cuid > 0 ) {
+      $currentUserName = user_get_username($cuid); 
+      if( strcasecmp($f_username, $currentUserName)  != 0 ){
+          auth_logout();
+      }
+    }
+
     $f_reauthenticate = gpc_get_bool( 'reauthenticate', false );
     $f_return = gpc_get_string( 'return', config_get( 'default_home_page' ) );
     $t_return = string_url( string_sanitize_url( $f_return ) );
@@ -88,4 +101,25 @@ function login($jwt) {
 
     # If no return page, redirect to default page
     print_header_redirect( config_get( 'default_home_page' ) );
+}
+
+/**
+ *
+ */
+function authGetCurrentUserID() {
+   
+    $t_cookie_string = auth_get_current_user_cookie();
+  if( $t_result = user_search_cache( 'cookie_string', $t_cookie_string ) ) {
+    $t_user_id = (int)$t_result['id'];
+    current_user_set( $t_user_id );
+    return $t_user_id;
+  }
+
+  # @todo error with an error saying they aren't logged in? Or redirect to the login page maybe?
+  db_param_push();
+  $t_query = 'SELECT id FROM {user} WHERE cookie_string=' . db_param();
+  $t_result = db_query( $t_query, array( $t_cookie_string ) );
+
+  $t_user_id = (int)db_result( $t_result );
+  return $t_user_id;
 }
