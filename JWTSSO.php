@@ -43,6 +43,7 @@ class JWTSSOPlugin extends MantisPlugin  {
      * @return void
      */
     function init() {
+        plugin_require_api( 'core/JWTUtils.class.php' );
     }
 
     /**
